@@ -1,7 +1,7 @@
 import React from "react";
 import Todo from "Todo";
 
-const Home = props => {
+const Home = ({ isAuthenticated, ...props }) => {
   <>
     <Todo />
   </>;
