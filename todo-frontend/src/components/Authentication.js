@@ -4,12 +4,7 @@
 //   Lambda
 // } from "aws-sdk";
 
-// import {
-//   CognitoUserPool,
-//   CognitoUserAttribute,
-//   CognitoUser
-// } from "amazon-cognito-identity-js";
-
+import { CognitoUserPool, CognitoUserAttribute, CognitoUser } from 'amazon-cognito-identity-js';
 import * as AWS from "aws-sdk/global";
 
 const poolData = {
@@ -17,9 +12,9 @@ const poolData = {
   ClientId: process.env.REACT_APP_COGNITO_CLIENT_ID
 };
 
-var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+const userPool = new CognitoUserPool(poolData);
 
-const addNewUser = ({ email, phoneNumber }) => {
+const addNewUser = ({ email }) => {
   var attributeList = [];
 
   var dataEmail = {
@@ -27,20 +22,16 @@ const addNewUser = ({ email, phoneNumber }) => {
     Value: email
   };
 
-  var dataPhoneNumber = {
-    Name: "phone_number",
-    Value: phoneNumber
-  };
+  
 
-  var attributeEmail = new AmazonCognitoIdentity.CognitoUserAttribute(
+  var attributeEmail = new CognitoUserAttribute(
     dataEmail
   );
-  var attributePhoneNumber = new AmazonCognitoIdentity.CognitoUserAttribute(
-    dataPhoneNumber
-  );
+  
 
   attributeList.push(attributeEmail);
-  attributeList.push(attributePhoneNumber);
+
+  console.log(attributeList);
 
   userPool.signUp("username", "password", attributeList, null, function(
     err,
@@ -55,59 +46,58 @@ const addNewUser = ({ email, phoneNumber }) => {
   });
 };
 
-const verifyExisitingUser = ({ email, password }) => {
-  var authenticationData = {
-    Username: email,
-    Password: password
-  };
-  var authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(
-    authenticationData
-  );
+// const verifyExisitingUser = ({ email, password }) => {
+//   var authenticationData = {
+//     Username: email,
+//     Password: password
+//   };
+//   var authenticationDetails = new AuthenticationDetails(
+//     authenticationData
+//   );
 
-  var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
-  var userData = {
-    Username: "username",
-    Pool: userPool
-  };
-  var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
-  cognitoUser.authenticateUser(authenticationDetails, {
-    onSuccess: function(result) {
-      var accessToken = result.getAccessToken().getJwtToken();
+//   var userPool = new CognitoUserPool(poolData);
+//   var userData = {
+//     Username: "username",
+//     Pool: userPool
+//   };
+//   var cognitoUser = new CognitoUser(userData);
+//   cognitoUser.authenticateUser(authenticationDetails, {
+//     onSuccess: function(result) {
+//       var accessToken = result.getAccessToken().getJwtToken();
 
-      //POTENTIAL: Region needs to be set if not already set previously elsewhere.
-      AWS.config.region = "<region>";
+//       //POTENTIAL: Region needs to be set if not already set previously elsewhere.
+//       AWS.config.region = "<region>";
 
-      AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-        IdentityPoolId: "...", // your identity pool id here
-        Logins: {
-          // Change the key below according to the specific region your user pool is in.
-          "cognito-idp.<region>.amazonaws.com/<YOUR_USER_POOL_ID>": result
-            .getIdToken()
-            .getJwtToken()
-        }
-      });
+//       AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+//         IdentityPoolId: "...", // your identity pool id here
+//         Logins: {
+//           // Change the key below according to the specific region your user pool is in.
+//           "cognito-idp.<region>.amazonaws.com/<YOUR_USER_POOL_ID>": result
+//             .getIdToken()
+//             .getJwtToken()
+//         }
+//       });
 
-      //refreshes credentials using AWS.CognitoIdentity.getCredentialsForIdentity()
-      AWS.config.credentials.refresh(error => {
-        if (error) {
-          console.error(error);
-        } else {
-          // Instantiate aws sdk service objects now that the credentials have been updated.
-          // example: var s3 = new AWS.S3();
-          console.log("Successfully logged!");
-        }
-      });
-    },
+//       //refreshes credentials using AWS.CognitoIdentity.getCredentialsForIdentity()
+//       AWS.config.credentials.refresh(error => {
+//         if (error) {
+//           console.error(error);
+//         } else {
+//           // Instantiate aws sdk service objects now that the credentials have been updated.
+//           // example: var s3 = new AWS.S3();
+//           console.log("Successfully logged!");
+//         }
+//       });
+//     },
 
-    onFailure: function(err) {
-      alert(err.message || JSON.stringify(err));
-    }
-  });
-};
+//     onFailure: function(err) {
+//       alert(err.message || JSON.stringify(err));
+//     }
+//   });
+// };
 
 const retrieveUserFromLocalStorage = () => {
   
-  var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
   var cognitoUser = userPool.getCurrentUser();
 
   if (cognitoUser != null) {
@@ -122,8 +112,11 @@ const retrieveUserFromLocalStorage = () => {
       cognitoUser.getUserAttributes(function(err, attributes) {
         if (err) {
           // Handle error
+          console.error(err);
+          return
         } else {
-          // Do something with attributes
+          console.log(attributes)
+          return attributes;
         }
       });
 
@@ -155,4 +148,4 @@ const retrieveUserFromLocalStorage = () => {
 //   }
 // };
 
-export { addNewUser, verifyExisitingUser, retrieveUserFromLocalStorage };
+export { addNewUser, retrieveUserFromLocalStorage };

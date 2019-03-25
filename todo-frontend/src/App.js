@@ -1,22 +1,28 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import Login from './components/Login'
+import Signin from './components/Register'
+import { retrieveUserFromLocalStorage } from './components/Authentication'
+import LoginComponent from './components/Login';
+
+const userName = retrieveUserFromLocalStorage();
+console.log(userName)
 
 class App extends Component {
-  
+
   render() {
-    if (this.props.isAuthenticated) {
+    if (userName) {
       return (
         <div className="App">
-          
+          {userName}
         </div>
       );
     } else {
       return (
-        <Login />
+        <LoginComponent />
       );
     }
+    return <Login />
   }
 }
 

@@ -4,10 +4,14 @@
   "private": true,
   "dependencies": {
     "amazon-cognito-identity-js": "^3.0.9",
+    "aws-amplify": "^1.1.22",
     "aws-sdk": "^2.427.0",
     "react": "^16.8.5",
+    "react-cognito": "^1.5.4",
     "react-dom": "^16.8.5",
-    "react-scripts": "2.1.8"
+    "react-redux": "^6.0.1",
+    "react-scripts": "2.1.8",
+    "redux": "^4.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
